@@ -1,6 +1,12 @@
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { ProfileActions } from "@/components/ProfileActions";
 import { ViewersCard } from "@/components/ViewersCard";
+import { AboutSection } from "@/components/AboutSection";
+import { ServicesSection } from "@/components/ServicesSection";
+import { FeaturedSection } from "@/components/FeaturedSection";
+import { ActivitySection } from "@/components/ActivitySection";
+import { PeopleYouMayKnow } from "@/components/PeopleYouMayKnow";
+import { YouMightLike } from "@/components/YouMightLike";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
@@ -62,6 +68,26 @@ const Index = () => {
                 </Button>
               </div>
             </div>
+
+            {/* About Section */}
+            <div className="mt-4">
+              <AboutSection />
+            </div>
+
+            {/* Services Section */}
+            <div className="mt-4">
+              <ServicesSection />
+            </div>
+
+            {/* Featured Section */}
+            <div className="mt-4">
+              <FeaturedSection />
+            </div>
+
+            {/* Activity Section */}
+            <div className="mt-4">
+              <ActivitySection />
+            </div>
           </div>
 
           {/* Right Sidebar */}
@@ -97,6 +123,12 @@ const Index = () => {
 
               {/* Viewers Card */}
               <ViewersCard />
+
+              {/* People You May Know */}
+              <PeopleYouMayKnow />
+
+              {/* You Might Like */}
+              <YouMightLike />
             </div>
           </div>
         </div>
