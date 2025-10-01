@@ -59,9 +59,12 @@ export default {
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "0.5rem",
+        md: "0.375rem",
+        sm: "0.25rem",
+      },
+      fontFamily: {
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
       },
       keyframes: {
         "accordion-down": {
