@@ -1,6 +1,8 @@
 import { BadgeCheck, Mail } from "lucide-react";
 import profilePhoto from "@/assets/profile-photo.png";
 import bannerImage from "@/assets/banner.png";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProfileHeaderProps {
   name: string;
@@ -10,6 +12,22 @@ interface ProfileHeaderProps {
 }
 
 export const ProfileHeader = ({ name, tagline, location, connections }: ProfileHeaderProps) => {
+  const { data: pageContent } = useQuery({
+    queryKey: ['page-content'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('page_content')
+        .select('content')
+        .limit(1)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const displayTagline = pageContent?.content || tagline;
+
   return (
     <div className="bg-card rounded-lg overflow-hidden border border-border">
       {/* Banner */}
@@ -56,7 +74,7 @@ export const ProfileHeader = ({ name, tagline, location, connections }: ProfileH
         </div>
 
         {/* Tagline */}
-        <p className="text-base mb-2 leading-snug">{tagline}</p>
+        <p className="text-base mb-2 leading-snug">{displayTagline}</p>
 
         {/* Location and Connections */}
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-1">
