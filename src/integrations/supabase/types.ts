@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      landing_page: {
+        Row: {
+          about: string
+          bio: string
+          created_at: string
+          featured: string | null
+          id: string
+          profile_name: string
+          services: string
+          updated_at: string
+        }
+        Insert: {
+          about: string
+          bio: string
+          created_at?: string
+          featured?: string | null
+          id?: string
+          profile_name: string
+          services: string
+          updated_at?: string
+        }
+        Update: {
+          about?: string
+          bio?: string
+          created_at?: string
+          featured?: string | null
+          id?: string
+          profile_name?: string
+          services?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       page_content: {
         Row: {
           content: string

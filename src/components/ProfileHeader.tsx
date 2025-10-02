@@ -1,8 +1,13 @@
-import { BadgeCheck, Mail } from "lucide-react";
+import { BadgeCheck, Pencil } from "lucide-react";
 import profilePhoto from "@/assets/profile-photo.png";
 import bannerImage from "@/assets/banner.png";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useLandingPageData, useUpdateLandingPage } from "@/hooks/useLandingPageData";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 
 interface ProfileHeaderProps {
   name: string;
@@ -12,21 +17,28 @@ interface ProfileHeaderProps {
 }
 
 export const ProfileHeader = ({ name, tagline, location, connections }: ProfileHeaderProps) => {
-  const { data: pageContent } = useQuery({
-    queryKey: ['page-content'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('page_content')
-        .select('content')
-        .limit(1)
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-  });
+  const { data: landingPageData } = useLandingPageData();
+  const updateMutation = useUpdateLandingPage();
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const [editedBio, setEditedBio] = useState("");
 
-  const displayTagline = pageContent?.content || tagline;
+  const displayName = landingPageData?.profile_name || name;
+  const displayBio = landingPageData?.bio || tagline;
+
+  const handleEditClick = () => {
+    setEditedName(displayName);
+    setEditedBio(displayBio);
+    setIsEditOpen(true);
+  };
+
+  const handleSave = () => {
+    updateMutation.mutate({
+      profile_name: editedName,
+      bio: editedBio,
+    });
+    setIsEditOpen(false);
+  };
 
   return (
     <div className="bg-card rounded-lg overflow-hidden border border-border">
@@ -37,11 +49,45 @@ export const ProfileHeader = ({ name, tagline, location, connections }: ProfileH
           alt="Profile banner" 
           className="w-full h-full object-cover"
         />
-        <button className="absolute top-4 right-4 w-10 h-10 bg-card rounded-full flex items-center justify-center hover:bg-muted transition-colors">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-          </svg>
-        </button>
+        <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+          <DialogTrigger asChild>
+            <Button
+              onClick={handleEditClick}
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 w-10 h-10 bg-card rounded-full hover:bg-muted"
+            >
+              <Pencil className="w-5 h-5" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Profile</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea
+                  id="bio"
+                  value={editedBio}
+                  onChange={(e) => setEditedBio(e.target.value)}
+                  rows={4}
+                />
+              </div>
+              <Button onClick={handleSave} className="w-full">
+                Save Changes
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Profile Content */}
@@ -60,7 +106,7 @@ export const ProfileHeader = ({ name, tagline, location, connections }: ProfileH
         {/* Name and Badge */}
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold tracking-tight">{name}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">{displayName}</h1>
             <BadgeCheck className="w-5 h-5 text-primary" fill="currentColor" />
           </div>
           
@@ -74,7 +120,7 @@ export const ProfileHeader = ({ name, tagline, location, connections }: ProfileH
         </div>
 
         {/* Tagline */}
-        <p className="text-base mb-2 leading-snug">{displayTagline}</p>
+        <p className="text-base mb-2 leading-snug">{displayBio}</p>
 
         {/* Location and Connections */}
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-1">

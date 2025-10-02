@@ -7,6 +7,8 @@ type TabType = "posts" | "comments" | "images";
 
 export const ActivitySection = () => {
   const [activeTab, setActiveTab] = useState<TabType>("posts");
+  const [likedPosts, setLikedPosts] = useState<number[]>([]);
+  const [likeCounts, setLikeCounts] = useState<Record<number, number>>({});
 
   const posts = [
     {
@@ -28,6 +30,28 @@ export const ActivitySection = () => {
       comments: 2
     }
   ];
+
+  const handleLike = (postId: number, currentLikes: number) => {
+    if (likedPosts.includes(postId)) {
+      setLikedPosts(likedPosts.filter(id => id !== postId));
+      setLikeCounts({ ...likeCounts, [postId]: (likeCounts[postId] || currentLikes) - 1 });
+    } else {
+      setLikedPosts([...likedPosts, postId]);
+      setLikeCounts({ ...likeCounts, [postId]: (likeCounts[postId] || currentLikes) + 1 });
+    }
+  };
+
+  const handleComment = () => {
+    alert("Comment feature coming soon!");
+  };
+
+  const handleRepost = () => {
+    alert("Repost feature coming soon!");
+  };
+
+  const handleSend = () => {
+    alert("Send feature coming soon!");
+  };
 
   return (
     <div className="bg-card rounded-lg border border-border p-6">
@@ -127,7 +151,7 @@ export const ActivitySection = () => {
                     <ThumbsUp className="w-2.5 h-2.5 text-white" fill="white" />
                   </div>
                 </div>
-                <span>{post.likes}</span>
+                <span>{likeCounts[post.id] || post.likes}</span>
               </div>
               <div>
                 {post.comments} {post.comments === 1 ? "comment" : "comments"}
@@ -136,19 +160,39 @@ export const ActivitySection = () => {
 
             {/* Action Buttons */}
             <div className="flex items-center justify-around pt-2 border-t border-border">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-muted flex-1">
-                <ThumbsUp className="w-5 h-5 mr-2" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={`hover:bg-muted flex-1 ${likedPosts.includes(post.id) ? 'text-primary' : 'text-muted-foreground'}`}
+                onClick={() => handleLike(post.id, post.likes)}
+              >
+                <ThumbsUp className="w-5 h-5 mr-2" fill={likedPosts.includes(post.id) ? 'currentColor' : 'none'} />
                 Like
               </Button>
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-muted flex-1">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-muted-foreground hover:bg-muted flex-1"
+                onClick={handleComment}
+              >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Comment
               </Button>
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-muted flex-1">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-muted-foreground hover:bg-muted flex-1"
+                onClick={handleRepost}
+              >
                 <Repeat2 className="w-5 h-5 mr-2" />
                 Repost
               </Button>
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-muted flex-1">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-muted-foreground hover:bg-muted flex-1"
+                onClick={handleSend}
+              >
                 <Send className="w-5 h-5 mr-2" />
                 Send
               </Button>
